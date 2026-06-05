@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sisal Welcome Bonus Gallery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent: #00ff80;
+      --accent-rgb: 0, 255, 128;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      padding: 40px 20px;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(var(--accent-rgb), 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(147, 51, 234, 0.05) 0%, transparent 40%);
+    }
+
+    header {
+      max-width: 1200px;
+      margin: 0 auto 40px auto;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      margin-bottom: 8px;
+      background: linear-gradient(to right, #ffffff, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .section-title {
+      max-width: 1200px;
+      margin: 40px auto 20px auto;
+      font-size: 1.5rem;
+      font-weight: 600;
+      border-left: 4px solid var(--accent);
+      padding-left: 12px;
+      color: #ffffff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(var(--accent-rgb), 0.3);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(var(--accent-rgb), 0.1);
+    }
+
+    .image-container {
+      position: relative;
+      background: #121824;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      aspect-ratio: 260 / 180;
+    }
+
+    .image-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .card-info {
+      padding: 16px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #ffffff;
+    }
+
+    .card-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .btn:hover {
+      background-color: var(--accent);
+      color: #000000;
+      border-color: var(--accent);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #00ff80;
+      color: #000000;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+      z-index: 100;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Sisal Welcome Bonuses</h1>
+    <p>Asset Library & Images Gallery</p>
+  </header>
+
+  <div class="section-title">Online Bonuses</div>
+  <div class="grid" id="online-grid"></div>
+
+  <div class="section-title">Shop Bonuses (Punto Vendita)</div>
+  <div class="grid" id="shop-grid"></div>
+
+  <div class="toast" id="toast">URL copiato negli appunti!</div>
+
+  <script>
+    const bonuses = [
+      { filename: 'online_casin_fun_bonus_6_200.png', title: 'Casinò | Fun Bonus', type: 'online', amount: '6.200€' },
+      { filename: 'online_casin_real_fun_bonus_5_250.png', title: 'Casinò | Real + Fun Bonus', type: 'online', amount: '5.250€' },
+      { filename: 'online_scommesse_6_000.png', title: 'Scommesse', type: 'online', amount: '6.000€' },
+      { filename: 'online_tutti_i_giochi_5_050.png', title: 'Tutti i giochi', type: 'online', amount: '5.050€' },
+      { filename: 'online_lotterie_50.png', title: 'Lotterie', type: 'online', amount: '50€' },
+      { filename: 'online_poker_6_000.png', title: 'Poker', type: 'online', amount: '6.000€' },
+      { filename: 'online_bingo_5_050.png', title: 'Bingo', type: 'online', amount: '5.050€' },
+      { filename: 'online_giochi_di_carte_5_070.png', title: 'Giochi di carte', type: 'online', amount: '5.070€' },
+      
+      { filename: 'negozio_scommesse_5_100.png', title: 'Scommesse', type: 'shop', amount: '5.100€' },
+      { filename: 'negozio_casin_real_fun_bonus_5_100.png', title: 'Casinò | Real + Fun Bonus', type: 'shop', amount: '5.100€' },
+      { filename: 'negozio_lotterie_5_100.png', title: 'Lotterie', type: 'shop', amount: '5.100€' },
+      { filename: 'negozio_tutti_i_giochi_5_100.png', title: 'Tutti i giochi', type: 'shop', amount: '5.100€' }
+    ];
+
+    const toast = document.getElementById('toast');
+    function showToast() {
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    function copyToClipboard(url) {
+      navigator.clipboard.writeText(url).then(() => {
+        showToast();
+      });
+    }
+
+    const onlineGrid = document.getElementById('online-grid');
+    const shopGrid = document.getElementById('shop-grid');
+
+    bonuses.forEach(b => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      
+      // Calculate absolute URL dynamically when hosted
+      const absoluteUrl = window.location.origin + '/' + b.filename;
+      
+      card.innerHTML = `
+        <div class="image-container">
+          <img src="${b.filename}" alt="${b.title}">
+        </div>
+        <div class="card-info">
+          <div>
+            <div class="card-title">${b.title}</div>
+            <div class="card-meta">Importo: ${b.amount} | File: ${b.filename}</div>
+          </div>
+          <button class="btn" onclick="copyToClipboard('${absoluteUrl}')">Copia Link Immagine</button>
+        </div>
+      `;
+      
+      if (b.type === 'online') {
+        onlineGrid.appendChild(card);
+      } else {
+        shopGrid.appendChild(card);
+      }
+    });
+  </script>
+</body>
+</html>
